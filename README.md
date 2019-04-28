@@ -17,9 +17,11 @@ eventBus.withCluster(cluster);
 
 if (cluster.isMaster) {
     for (let i = 1; i < numCPUs + 1; i++) {
+        // prepare event-bus worker
         eventBus.futureWorker(new EventBus.Worker({
             id: `worker_${i}`
         }), (err) => {
+            // event-bus worker is ready
             cluster.fork();
         });
     }
@@ -31,6 +33,7 @@ if (cluster.isMaster) {
       
         // do something with params
         // and return whatever as {}
+        console.log(`${params.message}`)
       
         return {
             "message": `hello ${params.id}, I'm worker_${cluster.worker.id}`,
