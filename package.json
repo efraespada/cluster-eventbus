@@ -1,0 +1,23 @@
+{
+  "name": "cluster-eventbus",
+  "version": "1.0.0",
+  "description": "Simple library for communicate different Node processes. Works with clusters.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node cluster.js",
+    "test": "mocha test.js"
+  },
+  "author": "Efraín Espada",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-timeout": "^1.9.0",
+    "express": "^4.16.4",
+    "promise": "^8.0.3",
+    "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "json-align": "^0.1.0",
+    "mocha": "^6.1.4"
+  }
+}
