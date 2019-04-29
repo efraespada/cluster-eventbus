@@ -1,19 +1,31 @@
+const computerName = require('computer-name');
 const Worker = require('./worker');
 const Master = require('./master');
+const EventUtils = require('./event_utils');
+const fs = require('fs');
+const ip = require('ip');
+JSON.stringifyAligned = require('json-align');
+
 
 function EventBus(configuration) {
 
+  let utils = new EventUtils();
   this.configuration = configuration || {};
   if (this.configuration.port === undefined) {
     this.configuration.port = 1000;
   }
   this.debug = this.configuration.debug || false;
   this.master = null;
+  this.machineName = computerName();
   this.currentWorker = null;
 
   this.defineMaster = () => {
     this.master = new Master(this.configuration);
-    this.master.prepare((port) => {
+    this.prepareConfigMaster();
+
+    console.log(process.cwd());
+    console.log(ip.address());
+    this.master.prepare(computerName(), (port) => {
       /**
        * Main EventBus process started
        */
@@ -37,12 +49,12 @@ function EventBus(configuration) {
       } else if (req.query !== undefined && req.query.method !== undefined) {
         let query = req.query;
         if (query.method === "get_port" && query.worker_id !== undefined) {
-          let workerKeys = Object.keys(this.master.processList);
+          let workerKeys = Object.keys(this.master.runningProcess);
           let port = -1;
           for (let k in workerKeys) {
             let key = workerKeys[k];
             if (key === query.worker_id) {
-              port = this.master.processList[key].port;
+              port = this.master.runningProcess[key].port;
               break;
             }
           }
@@ -61,9 +73,13 @@ function EventBus(configuration) {
     });
   };
 
-  this.futureWorker = (process, callback) => {
+  this.futureWorker = (worker, callback) => {
     if (this.master !== null) {
-      this.master.defineProcess(process, callback);
+      let port = this.getPortForWorker(this.machineName, worker.id, this.configuration.port);
+      utils.prepareConfigWorker(this.machineName, worker.id, ip.address(), port);
+      worker.ip = ip.address();
+      worker.port = port;
+      this.master.defineRunningProcess(process, callback);
     }
   };
 
@@ -110,7 +126,55 @@ function EventBus(configuration) {
     if (cluster.isMaster) {
       this.defineMaster();
     }
-  }
+  };
+
+  this.multiComputerProcessing = () => {
+    console.log(`preparing multiCoreProcessing`)
+  };
+
+  this.prepareConfigMaster = () => {
+    let configPath = `${process.cwd()}/config.json`;
+    let machineName = computerName();
+    if (!fs.existsSync(configPath)) {
+      let json = {};
+      json[`${machineName}`] = require(`./config_files/default_config_machine`);
+      fs.writeFileSync(configPath, JSON.stringifyAligned(json), 'utf8');
+    }
+    let conf = require(configPath);
+    if (conf[machineName] !== undefined) {
+      conf[machineName].isCore = true;
+      conf[machineName].master.ip = ip.address();
+      fs.writeFileSync(configPath, JSON.stringifyAligned(conf), 'utf8');
+    }
+    console.log(`config :
+${JSON.stringifyAligned(conf)}`)
+  };
+
+  this.prepareConfigWorker = (worker_id, ip, port) => {
+    let configPath = `${process.cwd()}/config.json`;
+    let machineName = computerName();
+    if (!fs.existsSync(configPath)) {
+      let json = {};
+      json[`${machineName}`] = require(`./config_files/default_config_machine`);
+      delete json[`${machineName}`].master;
+      fs.writeFileSync(configPath, JSON.stringifyAligned(json), 'utf8');
+    }
+    let conf = require(configPath);
+    if (conf[machineName] !== undefined) {
+      if (conf[machineName].workers === undefined) {
+        conf[machineName].workers = {};
+      }
+      if (conf[machineName].workers[worker_id] === undefined) {
+        conf[machineName].workers[worker_id] = {};
+      }
+      conf[machineName].workers[worker_id].id = worker_id;
+      conf[machineName].workers[worker_id].ip = ip.address();
+      conf[machineName].workers[worker_id].port = utils.getPortForWorker(conf, this.machineName, worker_id, this.configuration.port);
+      fs.writeFileSync(configPath, JSON.stringifyAligned(conf), 'utf8');
+    }
+    return conf;
+  };
+
 
 }
 

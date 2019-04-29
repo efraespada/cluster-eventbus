@@ -2,10 +2,14 @@ const numCPUs = require('os').cpus().length;
 const cluster = require('cluster');
 const EventBus = require('./index');
 
-let eventBus = new EventBus();
-eventBus.withCluster(cluster);
+let eventBus = new EventBus({
+  "port": 1000,
+  "debug": false
+});
 
 if (cluster.isMaster) {
+  eventBus.withCluster(cluster);
+
   for (let i = 1; i < numCPUs + 1; i++) {
     eventBus.futureWorker(new EventBus.Worker({
       id: `worker_${i}`

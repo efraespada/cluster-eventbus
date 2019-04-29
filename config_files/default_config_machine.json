@@ -1,0 +1,11 @@
+{
+  "isCore": false,
+  "master": {
+    "ip": "",
+    "port": 1000,
+    "debug": false
+  },
+  "workers": {
+
+  }
+}

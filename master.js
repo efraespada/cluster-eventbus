@@ -12,9 +12,9 @@ function Master(configuration) {
   this.processCounter = 0;
   this.configuration = configuration;
   this.mainPort = this.configuration.port;
-  this.processList = {};
+  this.runningProcess = {};
 
-  this.prepare = (callback, request) => {
+  this.prepare = (machine_name, callback, request) => {
     const express = require('express');
     const app = express();
     app.use(bodyParser.urlencoded({extended: true}));
@@ -35,7 +35,7 @@ function Master(configuration) {
    * @param process
    * @param callback
    */
-  this.defineProcess = (process, callback) => {
+  this.defineRunningProcess = (process, callback) => {
     if (process === null || process === undefined || process.id === undefined) {
       if (this.debug) {
         console.error(`Process not added to EventBus`)
@@ -43,12 +43,12 @@ function Master(configuration) {
       callback(Error.process_net_added_to_eventbus);
       return;
     }
-    if (this.processList[process.id] === undefined) {
-      this.processList[process.id] = process;
+    if (this.runningProcess[process.id] === undefined) {
+      this.runningProcess[process.id] = process;
       this.processCounter++;
-      this.processList[process.id].port = this.mainPort + this.processCounter;
+      this.runningProcess[process.id].port = this.mainPort + this.processCounter;
       if (this.debug) {
-        console.log(`${this.processList[process.id].id} with port ${this.processList[process.id].port}`);
+        console.log(`${this.runningProcess[process.id].id} with port ${this.runningProcess[process.id].port}`);
       }
       callback();
     } else {
@@ -60,12 +60,12 @@ function Master(configuration) {
   };
 
   this.event = (worker_id, params, callback) => {
-    let workerKeys = Object.keys(this.processList);
+    let workerKeys = Object.keys(this.runningProcess);
     let port = -1;
     for (let k in workerKeys) {
       let key = workerKeys[k];
       if (key === worker_id) {
-        port = this.processList[key].port;
+        port = this.runningProcess[key].port;
         break;
       }
     }
@@ -81,12 +81,12 @@ function Master(configuration) {
   };
 
   this.eventAll = (params, callback) => {
-    let workerKeys = Object.keys(this.processList);
+    let workerKeys = Object.keys(this.runningProcess);
     let port = -1;
     for (let k in workerKeys) {
       let key = workerKeys[k];
       if (key === worker_id) {
-        port = this.processList[key].port;
+        port = this.runningProcess[key].port;
         break;
       }
     }

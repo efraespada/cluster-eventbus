@@ -11,6 +11,7 @@ function Worker(configuration, callback) {
     throw new Error(`Process ID not defined`);
   }
   this.id = this.configuration.id;
+  this.ip = null;
   this.port = null;
 
   this.pending_request = {
@@ -22,7 +23,7 @@ function Worker(configuration, callback) {
   };
 
   this.prepare = (callback, request) => {
-    requestBuilder.getRequest(`http://localhost:${this.configuration.mainPort}/`, {
+    requestBuilder.getRequest(`http://${this.ip}:${this.configuration.mainPort}/`, {
       "method": "get_port",
       "worker_id": this.id
     }).then((response) => {

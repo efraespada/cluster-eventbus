@@ -1,4 +1,4 @@
-# Cluster-EventBus
+# Cluster EventBus
 Simple library for communicate different Node processes. Works with clusters.
 
 ```bash
