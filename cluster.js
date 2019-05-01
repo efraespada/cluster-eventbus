@@ -3,8 +3,9 @@ const cluster = require('cluster');
 const EventBus = require('./index');
 
 let eventBus = new EventBus({
+    name: `Turbine`,
     core: `MacBook Pro (914)`,
-    debug: true
+    debug: false
 }).cluster(cluster);
 
 if (cluster.isMaster) {
