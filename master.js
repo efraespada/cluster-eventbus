@@ -1,6 +1,7 @@
 const RequestBuilder = require(`./request`);
 const bodyParser = require('body-parser');
 const timeout = require('connect-timeout');
+const EventUtils = require('./event_utils');
 const Error = {
   "process_net_added_to_eventbus": `Process not added to EventBus`,
   "process_already_added_to_eventbus": `Process already added to EventBus`
@@ -8,11 +9,10 @@ const Error = {
 
 function Master(configuration) {
 
+  let utils = new EventUtils();
   let requestBuilder = new RequestBuilder();
-  this.processCounter = 0;
   this.configuration = configuration;
   this.mainPort = this.configuration.port;
-  this.runningProcess = {};
 
   this.prepare = (machine_name, callback, request) => {
     const express = require('express');
@@ -31,48 +31,27 @@ function Master(configuration) {
   };
 
   /**
-   * Adds a new process to the process list
-   * @param process
+   * Sends a event to a worker
+   * @param machine_name
+   * @param worker_id
+   * @param params
    * @param callback
    */
-  this.defineRunningProcess = (process, callback) => {
-    if (process === null || process === undefined || process.id === undefined) {
-      if (this.debug) {
-        console.error(`Process not added to EventBus`)
-      }
-      callback(Error.process_net_added_to_eventbus);
-      return;
+  this.event = (machine_name, worker_id, params, callback) => {
+    let config = utils.getConfig();
+    if (config[machine_name] === undefined
+        || config[machine_name].workers === undefined
+        || config[machine_name].workers[worker_id] === undefined
+        || config[machine_name].workers[worker_id].ip === undefined
+        || config[machine_name].workers[worker_id].port === undefined) {
+      return
     }
-    if (this.runningProcess[process.id] === undefined) {
-      this.runningProcess[process.id] = process;
-      this.processCounter++;
-      this.runningProcess[process.id].port = this.mainPort + this.processCounter;
-      if (this.debug) {
-        console.log(`${this.runningProcess[process.id].id} with port ${this.runningProcess[process.id].port}`);
-      }
-      callback();
-    } else {
-      if (this.debug) {
-        console.warn(`Process ${process.id} already added`)
-      }
-      callback(Error.process_already_added_to_eventbus);
-    }
-  };
-
-  this.event = (worker_id, params, callback) => {
-    let workerKeys = Object.keys(this.runningProcess);
-    let port = -1;
-    for (let k in workerKeys) {
-      let key = workerKeys[k];
-      if (key === worker_id) {
-        port = this.runningProcess[key].port;
-        break;
-      }
-    }
+    let ip = config[machine_name].workers[worker_id].ip;
+    let port = config[machine_name].workers[worker_id].port;
     if (port < 0) {
       callback(`port_not_found`)
     } else {
-      requestBuilder.getRequest(`http://localhost:${port}/`, params).then((response) => {
+      requestBuilder.getRequest(`http://${ip}:${port}/`, params).then((response) => {
         callback(response);
       }).catch((err) => {
         console.log(`error ${err}`);
@@ -80,24 +59,31 @@ function Master(configuration) {
     }
   };
 
+  /**
+   * Sends the same event to all workers
+   * @param params
+   * @param callback
+   */
   this.eventAll = (params, callback) => {
-    let workerKeys = Object.keys(this.runningProcess);
-    let port = -1;
-    for (let k in workerKeys) {
-      let key = workerKeys[k];
-      if (key === worker_id) {
-        port = this.runningProcess[key].port;
-        break;
+    let config = utils.getConfig();
+    let machineKeys = Object.keys(config);
+    for (let m in machineKeys) {
+      let key = machineKeys[m];
+      let machine = config[key];
+      if (machine.workers !== undefined) {
+        let workerKeys = Object.keys(machine.workers);
+        for (let wk in workerKeys) {
+          let workerKey = workerKeys[wk];
+          let worker = machine.workers[workerKey];
+          if (worker.ip !== undefined && worker.port !== undefined) {
+            requestBuilder.getRequest(`http://${worker.ip}:${worker.port}/`, params).then((response) => {
+              callback(worker.id, response);
+            }).catch((err) => {
+              console.log(`error ${err}`);
+            });
+          }
+        }
       }
-    }
-    if (port < 0) {
-      callback(`port_not_found`)
-    } else {
-      requestBuilder.getRequest(`http://localhost:${port}/`, params).then((response) => {
-        callback(response);
-      }).catch((err) => {
-        console.log(`error ${err}`);
-      });
     }
   };
 

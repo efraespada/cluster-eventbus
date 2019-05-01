@@ -17,13 +17,7 @@ eventBus.withCluster(cluster);
 
 if (cluster.isMaster) {
     for (let i = 1; i < numCPUs + 1; i++) {
-        // prepare event-bus worker
-        eventBus.futureWorker(new EventBus.Worker({
-            id: `worker_${i}`
-        }), (err) => {
-            // event-bus worker is ready
-            cluster.fork();
-        });
+         cluster.fork();
     }
 } else {
     // prepare the event-bus worker for incoming events
