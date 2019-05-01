@@ -11,38 +11,53 @@ const numCPUs = require('os').cpus().length;
 const cluster = require('cluster');
 const EventBus = require('cluster-eventbus');
 
-// setup EventBus
-let eventBus = new EventBus();
-eventBus.withCluster(cluster);
+let eventBus = new EventBus({
+    core: `MacBook Pro (914)`,
+    debug: true
+}).cluster(cluster);
 
 if (cluster.isMaster) {
     for (let i = 1; i < numCPUs + 1; i++) {
-         cluster.fork();
+        cluster.fork();
     }
 } else {
-    // prepare the event-bus worker for incoming events
-    eventBus.prepareWorker(new EventBus.Worker({
-        id: `worker_${cluster.worker.id}`
-    }), (params) => {
-      
-        // do something with params
-        // and return whatever as {}
-        console.log(`${params.message}`)
-      
-        return {
-            "message": `hello ${params.id}, I'm worker_${cluster.worker.id}`,
-            "params_received": params
-        };
-    });
+    eventBus.prepareWorker(cluster, (params) => {
+        
+            // do something with params
+            // and return something
+        
+            return {
+                "message": `hello ${params.id}, I'm worker_${cluster.worker.id}`,
+                "params_received": params
+            };
+        }
+    );
 }
 ```
 Ask something to a worker:
 ```js
-// asking to worker 1
-eventBus.event(`worker_1`, {
+let response = await eventBus.event(`My_Machine`,`worker_1`, {
   "message": `hello worker 1`,
-  "id": `worker_2`
-}, (response) => {
-  console.log(`response from worker_1: ${JSON.stringify(response)}`);
+  "id": `super worker :D`
 })
+
+{
+    response: {},
+    error: true,
+    error_message: ``
+}
+```
+Ask the same to all workers:
+```js
+let response = await eventBus.eventAll({
+  "message": `hello worker 1`,
+  "id": `other worker`,
+  "dfvafva": 0
+})
+
+{
+    responses: [{}, {}],
+    error: true,
+    error_messages: [``, ``]
+}
 ```

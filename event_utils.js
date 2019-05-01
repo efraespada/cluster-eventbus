@@ -117,7 +117,17 @@ function EventUtils() {
             ip: ip,
             port: port
         }
-    }
+    };
+
+    this.coreNotDefined = (core_machine) => {
+        throw Error(`EventBus core machine not defined. Run:
+
+let eventBus = new EventBus({
+    core: \`${core_machine}\`,
+    debug: true
+}).cluster(cluster);
+`)
+    };
 }
 
 module.exports = EventUtils;

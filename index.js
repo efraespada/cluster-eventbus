@@ -14,9 +14,12 @@ function EventBus(configuration) {
     if (this.configuration.port === undefined) {
         this.configuration.port = 1000;
     }
+    this.machineName = computerName();
+    if (this.configuration.core === undefined) {
+        utils.coreNotDefined(this.machineName);
+    }
     this.debug = this.configuration.debug || false;
     this.master = null;
-    this.machineName = computerName();
     this.currentWorker = null;
 
     /**
@@ -73,15 +76,6 @@ function EventBus(configuration) {
                 exception_worker_id || this.currentWorker.configuration.id)
         } else {
             return await this.master.eventAll(params, exception_machine_name, exception_worker_id);
-        }
-    };
-
-    this.withCluster = (main_machine, cluster) => {
-        if (this.machineName !== main_machine) {
-            return
-        }
-        if (cluster.isMaster) {
-            this.defineMaster();
         }
     };
 
@@ -157,6 +151,13 @@ function EventBus(configuration) {
             fs.writeFileSync(configPath, JSON.stringifyAligned(conf), 'utf8');
         }
     };
+
+    this.cluster = (cluster) =>  {
+        if (this.configuration.core === this.machineName && cluster.isMaster) {
+            this.defineMaster();
+        }
+        return this;
+    }
 
 }
 

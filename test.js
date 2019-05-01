@@ -1,7 +1,10 @@
 JSON.stringifyAligned = require('json-align');
 const EventBus = require('./index');
 let eventBus = new EventBus({
+    core: `MacBook Pro (914)`,
     debug: true
+}).cluster({
+    isMaster: false
 });
 
 eventBus.prepareWorker({
