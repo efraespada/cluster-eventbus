@@ -11,22 +11,22 @@ let eventBus = new EventBus({
 
 eventBus.prepareWorker({
     worker: {
-        id: 99
+        id: 2
     }
 }, (params) => {
     return {
-        "message": `hello ${params.id}, I'm worker 99`,
+        "message": `hello ${params.id}, I'm worker 2`,
         "params_received": params
     };
 });
 
 eventBus.prepareWorker({
     worker: {
-        id: 1
+        id: 3
     }
 }, (params) => {
     return {
-        "message": `hello ${params.id}, I'm worker 1`,
+        "message": `hello ${params.id}, I'm worker 3`,
         "params_received": params
     };
 });
@@ -38,15 +38,15 @@ setTimeout(() => {
     describe('EventBus Test', () => {
         for (let i = 0; i < 1000; i++) {
             it(`asking to worker time ${i}`, async () => {
-                return await eventBus.event(`MacBook Pro (914)`, `worker_1`, {
-                    "message": `hello worker 1`,
+                return await eventBus.event(``, `worker_2`, {
+                    "message": `hello worker 2`,
                     "id": `test`
                 });
             });
         }
         it('asking to all', async () => {
             return await eventBus.eventAll({
-                "message": `hello worker 1`,
+                "message": `hello workers`,
                 "id": `test`
             });
         });

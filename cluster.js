@@ -3,8 +3,8 @@ const cluster = require('cluster');
 const EventBus = require('./index');
 
 let eventBus = new EventBus({
-    port: 4000,
-    test: true,
+    name: `Turbine`,
+    core: `MacBook Pro (914)`,
     debug: false
 }).cluster(cluster);
 
