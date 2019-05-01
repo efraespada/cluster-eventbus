@@ -1,43 +1,60 @@
 JSON.stringifyAligned = require('json-align');
 const EventBus = require('./index');
-let eventBus = new EventBus({
-  debug: true
+
+let conf = {
+    test: true,
+    debug: true,
+    port: 4000
+};
+
+new EventBus(conf).cluster({
+    isMaster: true
 });
 
-eventBus.prepareWorker(new EventBus.Worker({
-    id: `test`
-  }), (params) => {
+let eventBusWorkerA = new EventBus(conf).cluster({
+    isMaster: false
+});
+
+let eventBusWorkerB = new EventBus(conf).cluster({
+    isMaster: false
+});
+
+
+eventBusWorkerA.prepareWorker({
+    worker: {
+        id: 2
+    }
+}, (params) => {
     return {
-      "message": `hello ${params.id}, I'm tester`,
-      "params_received": params
+        "message": `hello ${params.id}, I'm worker 2`,
+        "params_received": params
     };
-  }
-);
+});
 
+eventBusWorkerB.prepareWorker({
+    worker: {
+        id: 3
+    }
+}, (params) => {
+    return {
+        "message": `hello ${params.id}, I'm worker 3`,
+        "params_received": params
+    };
+});
 
-/**
- * Testing get all user endpoint
- */
-describe('EventBus Test', function () {
-  it('asking to worker', function (done) {
-    eventBus.event(`worker_1`, {
-      "message": `hello worker 1`,
-      "id": `test`
-    }, (response) => {
-      console.log(`response from worker_1: ${JSON.stringifyAligned(response)}`);
-      done()
-    })
-  });
-
-  for (let i = 0; i < 1000; i++) {
-    it(`asking to worker time ${i}`, function (done) {
-      eventBus.event(`worker_1`, {
-        "message": `hello worker 1`,
-        "id": `test`
-      }, (response) => {
-        console.log(`response from worker_1: ${JSON.stringifyAligned(response)}`);
-        done()
-      })
+describe('EventBus Test', () => {
+    for (let i = 0; i < 1000; i++) {
+        it(`asking to worker time ${i}`, async () => {
+            return await eventBusWorkerA.event(``, `worker_3`, {
+                "message": `hello worker 2`,
+                "id": `test`
+            });
+        });
+    }
+    it('asking to all', async () => {
+        return await eventBusWorkerB.eventAll({
+            "message": `hello workers`,
+            "id": `test`
+        });
     });
-  }
 });

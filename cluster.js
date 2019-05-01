@@ -2,53 +2,26 @@ const numCPUs = require('os').cpus().length;
 const cluster = require('cluster');
 const EventBus = require('./index');
 
-let eventBus = new EventBus();
-eventBus.withCluster(cluster);
+let eventBus = new EventBus({
+    name: `Turbine`,
+    core: `MacBook Pro (914)`,
+    debug: false
+}).cluster(cluster);
 
 if (cluster.isMaster) {
-  let workers = [];
-
-  let spawn = function (i) {
-
-    eventBus.futureWorker(new EventBus.Worker({
-      id: `worker_${i}`
-    }), (err) => {
-
-      if (err !== undefined) {
-        console.error(err);
-        return;
-      }
-
-      /**
-       * Wake up worker process
-       * @type {Worker}
-       */
-      workers[i] = cluster.fork();
-      workers[i].on('exit', function (code, signal) {
-        logger.debug('respawning worker ' + i);
-        spawn(i);
-      });
-    });
-
-    eventBus.futureWorker(new EventBus.Worker({
-      id: `test`
-    }), (err) => {
-      // nothing to do here
-    });
-
-  };
-
-  for (let i = 0; i < numCPUs; i++) {
-    spawn(i + 1);
-  }
-} else {
-  eventBus.prepareWorker(new EventBus.Worker({
-      id: `worker_${cluster.worker.id}`
-    }), (params) => {
-      return {
-        "message": `hello ${params.id}, I'm worker_${cluster.worker.id}`,
-        "params_received": params
-      };
+    for (let i = 1; i < numCPUs + 1; i++) {
+        cluster.fork();
     }
-  );
+} else {
+    eventBus.prepareWorker(cluster, (params) => {
+
+            // do something with params
+            // and return something
+
+            return {
+                "message": `hello ${params.id}, I'm worker_${cluster.worker.id}`,
+                "params_received": params
+            };
+        }
+    );
 }

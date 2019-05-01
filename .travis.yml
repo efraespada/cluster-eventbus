@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - "11"
+sudo: enabled
+os: osx
+before_install:
+  - npm install -g mocha
+  - npm install
