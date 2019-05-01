@@ -1,3 +1,8 @@
+[![npm version][npm-badge]][npm]
+[![Build Status][travis-badge]][travis]
+[![Dependency Status][david-badge]][david]
+[![DevDependency Status][david-badge-dev]][david-dev]
+
 # Cluster EventBus
 Simple library for communicating different processes. 
 
@@ -67,3 +72,12 @@ let response = await eventBus.eventAll({
     error_messages: [``, ``]
 }
 ```
+
+[david]: https://david-dm.org/efraespada/cluster-eventbus
+[david-badge]: https://david-dm.org/efraespada/cluster-eventbus.svg
+[travis]: https://travis-ci.org/efraespada/cluster-eventbus
+[travis-badge]: https://travis-ci.org/efraespada/cluster-eventbus.svg?branch=master
+[david-dev]: https://david-dm.org/efraespada/cluster-eventbus?type=dev
+[david-badge-dev]: https://david-dm.org/efraespada/cluster-eventbus/dev-status.svg
+[npm]: https://www.npmjs.com/package/cluster-eventbus
+[npm-badge]: https://badge.fury.io/js/cluster-eventbus.svg
