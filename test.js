@@ -2,7 +2,8 @@ JSON.stringifyAligned = require('json-align');
 const EventBus = require('./index');
 let eventBus = new EventBus({
     test: true,
-    debug: true
+    debug: true,
+    port: 4000
 }).cluster({
     isMaster: true
 });
@@ -39,4 +40,4 @@ setTimeout(() => {
             });
         });
     });
-}, 1000);
+}, 3000);
