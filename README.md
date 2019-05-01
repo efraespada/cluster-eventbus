@@ -1,9 +1,9 @@
+# Cluster EventBus
 [![npm version][npm-badge]][npm]
 [![Build Status][travis-badge]][travis]
 [![Dependency Status][david-badge]][david]
 [![DevDependency Status][david-badge-dev]][david-dev]
 
-# Cluster EventBus
 Simple library for communicating different processes. 
 
 I developed the library for communicating different cluster processes. It also connects different machines in the same local network to share clusters and distribute the work.
