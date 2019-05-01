@@ -88,8 +88,6 @@ function EventBus(configuration) {
        */
       if (req.body !== undefined && req.body.method !== undefined) {
         let body = req.body;
-
-        console.log(`body: ${body}`);
         if (body.method === "event_to"
             && body.machine_name !== undefined
             && body.worker_id !== undefined
