@@ -25,8 +25,8 @@ function Master(configuration) {
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Headers, Access-Control-Allow-Origin");
             next();
         });
-        app.get('/', (req, res) => request(req, res));
-        app.post('/', (req, res) => request(req, res));
+        app.get('/', async (req, res) => await request(req, res));
+        app.post('/', async (req, res) => await request(req, res));
         app.listen(this.mainPort, callback(this.mainPort));
     };
 
@@ -82,9 +82,8 @@ function Master(configuration) {
      * @param exception_machine_name
      * @param exception_worker_id
      * @param params
-     * @param callback
      */
-    this.eventAll = (exception_machine_name, exception_worker_id, params) => {
+    this.eventAll = (params, exception_machine_name, exception_worker_id) => {
         return new Promise((resolve, reject) => {
             let config = utils.getConfig();
             let machineKeys = Object.keys(config);
@@ -118,7 +117,7 @@ function Master(configuration) {
 
             for (let m in machineKeys) {
                 let key = machineKeys[m];
-                if (exception_machine_name !== null && exception_worker_id === null && key === exception_machine_name) {
+                if (exception_machine_name !== undefined && exception_worker_id === undefined && key === exception_machine_name) {
                     continue;
                 }
                 let machine = config[key];
@@ -126,7 +125,7 @@ function Master(configuration) {
                     let workerKeys = Object.keys(machine.workers);
                     for (let wk in workerKeys) {
                         let workerKey = workerKeys[wk];
-                        if (exception_machine_name !== null && exception_worker_id !== null && key === exception_machine_name && workerKey === exception_worker_id) {
+                        if (exception_machine_name !== undefined && exception_worker_id !== undefined && key === exception_machine_name && workerKey === exception_worker_id) {
                             continue;
                         }
                         let worker = machine.workers[workerKey];

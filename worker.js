@@ -81,7 +81,7 @@ function Worker(configuration) {
         })
     };
 
-    this.eventAll = (exception_machine_name, exception_worker_id, params) => {
+    this.eventAll = (params, exception_machine_name, exception_worker_id) => {
         return new Promise((resolve, reject) => {
             let connectionConfig = utils.mainMachine();
             if (connectionConfig === null || connectionConfig.ip === undefined || connectionConfig.port === undefined) {
@@ -93,7 +93,6 @@ function Worker(configuration) {
                 "exception_machine_name": exception_machine_name,
                 "exception_worker_id": exception_worker_id
             }).then((response) => {
-                console.log(`response 1: ${JSON.stringify(response)}`);
                 let res = {
                     responses: response.responses,
                     error: response.error,

@@ -1,6 +1,7 @@
 const numCPUs = require('os').cpus().length;
 const cluster = require('cluster');
 const EventBus = require('./index');
+JSON.stringifyAligned = require('json-align');
 
 let eventBus = new EventBus({
     "port": 1000,
@@ -23,8 +24,9 @@ if (cluster.isMaster) {
 
     setTimeout(async () => {
         let response = await eventBus.eventAll({
-            "message": "hello"
+            "message": "hello",
+            id: "john cost" + cluster.worker.id
         });
-        console.log(`response: ${JSON.stringify(response)}`)
+        console.log(`response: ${JSON.stringifyAligned(response)}`)
     }, 3000)
 }

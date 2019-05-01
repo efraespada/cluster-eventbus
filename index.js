@@ -65,11 +65,14 @@ function EventBus(configuration) {
         }
     };
 
-    this.eventAll = async (params) => {
+    this.eventAll = async (params, exception_machine_name, exception_worker_id) => {
         if (this.currentWorker !== null) {
-            await this.currentWorker.eventAll(this.machineName, this.currentWorker.configuration.id, params)
+            return await this.currentWorker.eventAll(
+                params,
+                exception_machine_name || this.machineName,
+                exception_worker_id || this.currentWorker.configuration.id)
         } else {
-            await this.master.eventAll(null, null, params);
+            return await this.master.eventAll(params, exception_machine_name, exception_worker_id);
         }
     };
 
@@ -95,7 +98,7 @@ function EventBus(configuration) {
             if (this.debug) {
                 console.log(`eventbus master started (${ip.address()}:${port})`)
             }
-        }, (req, res) => {
+        }, async (req, res) => {
             /**
              * Process request
              */
@@ -105,18 +108,16 @@ function EventBus(configuration) {
                     && body.machine_name !== undefined
                     && body.worker_id !== undefined
                     && body.params !== undefined) {
-                    this.event(body.machine_name, body.worker_id, body.params, (response) => {
-                        let r = response || {};
-                        res.json(r);
-                    })
+                    let response = await this.event(body.machine_name, body.worker_id, body.params);
+                    let r = response || {};
+                    res.json(r);
                 } else if (body.method === "event_to_all"
-                    && body.machine_name !== undefined
-                    && body.worker_id !== undefined
+                    && body.exception_machine_name !== undefined
+                    && body.exception_worker_id !== undefined
                     && body.params !== undefined) {
-                    this.event(body.machine_name, body.worker_id, body.params, (response) => {
-                        let r = response || {};
-                        res.json(r);
-                    })
+                    let response = await this.eventAll(body.params, body.exception_machine_name, body.exception_worker_id);
+                    let r = response || {};
+                    res.json(r);
                 } else {
                     res.send(`body_not_found`)
                 }
