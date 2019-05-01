@@ -88,9 +88,6 @@ function EventBus(configuration) {
     this.defineMaster = () => {
         this.master = new Master(this.configuration);
         this.prepareConfigMaster();
-
-        console.log(`MASTER`);
-
         this.master.prepare(this.machineName, (port) => {
             /**
              * Main EventBus process started
