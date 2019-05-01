@@ -74,6 +74,9 @@ function EventUtils() {
             fs.writeFileSync(configPath, JSON.stringifyAligned(json), 'utf8');
             conf = json;
         }
+        if (conf[machine_name] === undefined) {
+            conf[machine_name] = {};
+        }
         if (conf[machine_name] !== undefined) {
             if (conf[machine_name].workers === undefined) {
                 conf[machine_name].workers = {};
