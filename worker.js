@@ -50,23 +50,65 @@ function Worker(configuration) {
         });
     };
 
-    this.event = (machine_name, worker_id, params, callback) => {
-        let connectionConfig = utils.mainMachine();
-        if (connectionConfig === null || connectionConfig.ip === undefined || connectionConfig.port === undefined) {
-            callback(null);
-            return
-        }
-        requestBuilder.postRequest(`http://${connectionConfig.ip}:${connectionConfig.port}/`, {
-            "method": "event_to",
-            "params": params,
-            "machine_name": machine_name,
-            "worker_id": worker_id
-        }).then((response) => {
-            callback(response);
-        }).catch((err) => {
-            console.log(`error ${err}`);
-            callback(null);
-        });
+    this.event = (machine_name, worker_id, params) => {
+        return new Promise((resolve, reject) => {
+            let connectionConfig = utils.mainMachine();
+            if (connectionConfig === null || connectionConfig.ip === undefined || connectionConfig.port === undefined) {
+                let res = {
+                    error: true,
+                    error_message: `invalid config`
+                };
+                resolve(res);
+            }
+            requestBuilder.postRequest(`http://${connectionConfig.ip}:${connectionConfig.port}/`, {
+                "method": "event_to",
+                "params": params,
+                "machine_name": machine_name,
+                "worker_id": worker_id
+            }).then((response) => {
+                let res = {
+                    response: response,
+                    error: false
+                };
+                resolve(res);
+            }).catch((err) => {
+                let res = {
+                    error: true,
+                    error_message: `error ${err}`
+                };
+                resolve(res);
+            });
+        })
+    };
+
+    this.eventAll = (exception_machine_name, exception_worker_id, params) => {
+        return new Promise((resolve, reject) => {
+            let connectionConfig = utils.mainMachine();
+            if (connectionConfig === null || connectionConfig.ip === undefined || connectionConfig.port === undefined) {
+                reject(`main_config_not_found`);
+            }
+            requestBuilder.postRequest(`http://${connectionConfig.ip}:${connectionConfig.port}/`, {
+                "method": "event_to_all",
+                "params": params,
+                "exception_machine_name": exception_machine_name,
+                "exception_worker_id": exception_worker_id
+            }).then((response) => {
+                console.log(`response 1: ${JSON.stringify(response)}`);
+                let res = {
+                    responses: response.responses,
+                    error: response.error,
+                    error_messages: response.error_messages !== undefined ? response.error_messages : undefined
+                };
+                resolve(res);
+            }).catch((err) => {
+                let res = {
+                    responses: [],
+                    error: true,
+                    error_messages: err
+                };
+                resolve(res);
+            });
+        })
     };
 
 
