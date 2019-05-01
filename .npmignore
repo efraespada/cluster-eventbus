@@ -5,3 +5,6 @@ package-lock.json
 README.md
 cluster.js
 test.js
+.idea/
+.DS_store
+.travis.yml

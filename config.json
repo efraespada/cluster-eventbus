@@ -1,0 +1,52 @@
+{
+    "MacBook Pro (914)" : {
+        "isCore" : true,
+        "master" : {
+            "ip"    : "192.168.1.135",
+            "port"  : 1000,
+            "debug" : false
+        },
+        "workers" : {
+            "worker_3" : {
+                "id"   : "worker_3",
+                "ip"   : "192.168.1.135",
+                "port" : 4001
+            },
+            "worker_2" : {
+                "id"   : "worker_2",
+                "ip"   : "192.168.1.135",
+                "port" : 4002
+            },
+            "worker_1" : {
+                "id"   : "worker_1",
+                "ip"   : "192.168.1.135",
+                "port" : 4003
+            },
+            "worker_4" : {
+                "id"   : "worker_4",
+                "ip"   : "192.168.1.135",
+                "port" : 4004
+            },
+            "worker_7" : {
+                "id"   : "worker_7",
+                "ip"   : "192.168.1.135",
+                "port" : 4005
+            },
+            "worker_5" : {
+                "id"   : "worker_5",
+                "ip"   : "192.168.1.135",
+                "port" : 4006
+            },
+            "worker_6" : {
+                "id"   : "worker_6",
+                "ip"   : "192.168.1.135",
+                "port" : 4007
+            },
+            "worker_8" : {
+                "id"   : "worker_8",
+                "ip"   : "192.168.1.135",
+                "port" : 4008
+            }
+        }
+    }
+}
