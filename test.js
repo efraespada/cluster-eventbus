@@ -1,15 +1,26 @@
 JSON.stringifyAligned = require('json-align');
 const EventBus = require('./index');
-let eventBus = new EventBus({
+
+let conf = {
     test: true,
     debug: true,
     port: 4000
-}).cluster({
+};
+
+new EventBus(conf).cluster({
     isMaster: true
 });
 
+let eventBusWorkerA = new EventBus(conf).cluster({
+    isMaster: false
+});
 
-eventBus.prepareWorker({
+let eventBusWorkerB = new EventBus(conf).cluster({
+    isMaster: false
+});
+
+
+eventBusWorkerA.prepareWorker({
     worker: {
         id: 2
     }
@@ -20,7 +31,7 @@ eventBus.prepareWorker({
     };
 });
 
-eventBus.prepareWorker({
+eventBusWorkerB.prepareWorker({
     worker: {
         id: 3
     }
@@ -38,17 +49,17 @@ setTimeout(() => {
     describe('EventBus Test', () => {
         for (let i = 0; i < 1000; i++) {
             it(`asking to worker time ${i}`, async () => {
-                return await eventBus.event(``, `worker_2`, {
+                return await eventBusWorkerA.event(``, `worker_3`, {
                     "message": `hello worker 2`,
                     "id": `test`
                 });
             });
         }
         it('asking to all', async () => {
-            return await eventBus.eventAll({
+            return await eventBusWorkerB.eventAll({
                 "message": `hello workers`,
                 "id": `test`
             });
         });
     });
-}, 3000);
+}, 10000);
