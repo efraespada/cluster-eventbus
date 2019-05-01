@@ -53,5 +53,29 @@
                 "port" : 1009
             }
         }
+    },
+    "Efraín’s Mac mini" : {
+        "workers" : {
+            "worker_3" : {
+                "id"   : "worker_3",
+                "ip"   : "192.168.1.136",
+                "port" : 1001
+            },
+            "worker_1" : {
+                "id"   : "worker_1",
+                "ip"   : "192.168.1.136",
+                "port" : 1002
+            },
+            "worker_2" : {
+                "id"   : "worker_2",
+                "ip"   : "192.168.1.136",
+                "port" : 1003
+            },
+            "worker_4" : {
+                "id"   : "worker_4",
+                "ip"   : "192.168.1.136",
+                "port" : 1004
+            }
+        }
     }
 }
