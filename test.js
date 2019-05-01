@@ -19,26 +19,19 @@ eventBus.prepareWorker({
 /**
  * Testing get all user endpoint
  */
-describe('EventBus Test', function () {
-    it('asking to worker', function (done) {
-        eventBus.event(`MacBook Pro (914)`, `worker_1`, {
-            "message": `hello worker 1`,
-            "id": `test`
-        }, (response) => {
-            console.log(`response from worker_1: ${JSON.stringifyAligned(response)}`);
-            done()
-        })
-    });
-
+describe('EventBus Test', () => {
     for (let i = 0; i < 1000; i++) {
-        it(`asking to worker time ${i}`, function (done) {
-            eventBus.event(`MacBook Pro (914)`,`worker_1`, {
+        it(`asking to worker time ${i}`, async () => {
+            return await eventBus.event(`MacBook Pro (914)`, `worker_1`, {
                 "message": `hello worker 1`,
                 "id": `test`
-            }, (response) => {
-                console.log(`response from worker_1: ${JSON.stringifyAligned(response)}`);
-                done()
-            })
+            });
         });
     }
+    it('asking to all', async () => {
+        return await eventBus.eventAll({
+            "message": `hello worker 1`,
+            "id": `test`
+        });
+    });
 });

@@ -21,12 +21,4 @@ if (cluster.isMaster) {
             };
         }
     );
-
-    setTimeout(async () => {
-        let response = await eventBus.eventAll({
-            "message": "hello",
-            id: "john cost" + cluster.worker.id
-        });
-        console.log(`response: ${JSON.stringifyAligned(response)}`)
-    }, 3000)
 }
