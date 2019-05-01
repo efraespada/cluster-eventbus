@@ -20,4 +20,11 @@ if (cluster.isMaster) {
             };
         }
     );
+
+    setTimeout(async () => {
+        let response = await eventBus.eventAll({
+            "message": "hello"
+        });
+        console.log(`response: ${JSON.stringify(response)}`)
+    }, 3000)
 }

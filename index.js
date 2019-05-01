@@ -54,14 +54,22 @@ function EventBus(configuration) {
         })
     };
 
-    this.event = (machine_name, worker_id, params, callback) => {
+    this.event = (machine_name, worker_id, params) => {
         if (this.currentWorker !== null) {
             if (worker_id === this.currentWorker.configuration.id) {
                 return;
             }
-            this.currentWorker.event(machine_name, worker_id, params, callback)
+            this.currentWorker.event(machine_name, worker_id, params)
         } else {
-            this.master.event(machine_name, worker_id, params, callback);
+            this.master.event(machine_name, worker_id, params);
+        }
+    };
+
+    this.eventAll = async (params) => {
+        if (this.currentWorker !== null) {
+            await this.currentWorker.eventAll(this.machineName, this.currentWorker.configuration.id, params)
+        } else {
+            await this.master.eventAll(null, null, params);
         }
     };
 
@@ -78,7 +86,7 @@ function EventBus(configuration) {
         this.master = new Master(this.configuration);
         this.prepareConfigMaster();
 
-        console.log(`MASTER`)
+        console.log(`MASTER`);
 
         this.master.prepare(this.machineName, (port) => {
             /**
@@ -94,6 +102,14 @@ function EventBus(configuration) {
             if (req.body !== undefined && req.body.method !== undefined) {
                 let body = req.body;
                 if (body.method === "event_to"
+                    && body.machine_name !== undefined
+                    && body.worker_id !== undefined
+                    && body.params !== undefined) {
+                    this.event(body.machine_name, body.worker_id, body.params, (response) => {
+                        let r = response || {};
+                        res.json(r);
+                    })
+                } else if (body.method === "event_to_all"
                     && body.machine_name !== undefined
                     && body.worker_id !== undefined
                     && body.params !== undefined) {
