@@ -42,24 +42,19 @@ eventBusWorkerB.prepareWorker({
     };
 });
 
-setTimeout(() => {
-    /**
-     * Testing get all user endpoint
-     */
-    describe('EventBus Test', () => {
-        for (let i = 0; i < 1000; i++) {
-            it(`asking to worker time ${i}`, async () => {
-                return await eventBusWorkerA.event(``, `worker_3`, {
-                    "message": `hello worker 2`,
-                    "id": `test`
-                });
-            });
-        }
-        it('asking to all', async () => {
-            return await eventBusWorkerB.eventAll({
-                "message": `hello workers`,
+describe('EventBus Test', () => {
+    for (let i = 0; i < 1000; i++) {
+        it(`asking to worker time ${i}`, async () => {
+            return await eventBusWorkerA.event(``, `worker_3`, {
+                "message": `hello worker 2`,
                 "id": `test`
             });
         });
+    }
+    it('asking to all', async () => {
+        return await eventBusWorkerB.eventAll({
+            "message": `hello workers`,
+            "id": `test`
+        });
     });
-}, 10000);
+});
