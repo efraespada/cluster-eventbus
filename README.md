@@ -1,7 +1,7 @@
 # Cluster EventBus
-Simple library for communicate different Node processes. 
+Simple library for communicating different processes. 
 
-I developed the library for communicating different cluster processes. The library also connects different machines in the same local network to share clusters and distribute the work.
+I developed the library for communicating different cluster processes. It also connects different machines in the same local network to share clusters and distribute the work.
 ```bash
 $ npm install cluster-eventbus --save
 ```
@@ -40,9 +40,9 @@ if (cluster.isMaster) {
 ```
 Ask something to a worker:
 ```js
-let response = await eventBus.event(`My_Machine`,`worker_1`, {
+let response = await eventBus.event(`MacBook Pro (914)`,`worker_1`, {
   "message": `hello worker 1`,
-  "id": `super worker :D`
+  "id": `test_worker`
 })
 
 {
@@ -55,8 +55,10 @@ Ask the same to all workers:
 ```js
 let response = await eventBus.eventAll({
   "message": `hello workers`,
-  "id": `other worker`,
-  "dfvafva": 0
+  "id": `test_worker`,
+  "data": {
+      "method": "get_name"
+  }
 })
 
 {
