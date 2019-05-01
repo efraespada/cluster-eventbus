@@ -5,4 +5,5 @@ sudo: enabled
 os: osx
 before_install:
   - npm install -g mocha
+  - npm install
   - node cluster.js
