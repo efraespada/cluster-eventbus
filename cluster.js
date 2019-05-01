@@ -3,6 +3,7 @@ const cluster = require('cluster');
 const EventBus = require('./index');
 
 let eventBus = new EventBus({
+    test: true,
     debug: false
 }).cluster(cluster);
 

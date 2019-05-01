@@ -17,6 +17,9 @@ function EventBus(configuration) {
     if (this.configuration.name === undefined) {
         this.configuration.name = `Cluster`;
     }
+    if (this.configuration.test === undefined) {
+        this.configuration.test = false;
+    }
     this.machineName = computerName();
     this.debug = this.configuration.debug || false;
     this.master = null;
@@ -80,6 +83,9 @@ function EventBus(configuration) {
     };
 
     this.defineMaster = (callback) => {
+        if (this.configuration.test) {
+            console.warn(`${this.configuration.name} running on test mode`)
+        }
         this.master = new Master(this.configuration);
         this.prepareConfigMaster();
         this.master.prepare(this.machineName, (port) => {
@@ -152,12 +158,12 @@ function EventBus(configuration) {
 
     this.cluster = (cluster) =>  {
         if (cluster.isMaster) {
-            if (this.configuration.core === undefined) {
+            if (this.configuration.core === undefined && !this.configuration.test) {
                 console.log(`${this.configuration.name} EventBus running on ${this.machineName}. [ 🔳 core not defined ]`);
                 utils.coreNotDefined(this.machineName);
             }
         }
-        if (this.configuration.core === this.machineName && cluster.isMaster) {
+        if ((this.configuration.core === this.machineName || this.configuration.test) && cluster.isMaster) {
             this.defineMaster((port) => {
                 let msg = this.machineName === this.configuration.core ? ` 🔲 core ` : ` 🔲 ${this.configuration.core} `;
                 console.log(`${this.configuration.name} EventBus running on ${this.machineName} [${msg}]`);
