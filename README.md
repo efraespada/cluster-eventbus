@@ -6,7 +6,7 @@ It has been designed for communicating different clustered Node processes. The l
 $ npm install cluster-eventbus --save
 ```
 
-<p align="center"><img width="10%" vspace="20" src="https://github.com/efraespada/cluster-eventbus/raw/develop/eventbus.png"></p>
+<p align="center"><img width="100%" vspace="20" src="https://github.com/efraespada/cluster-eventbus/raw/develop/eventbus.png"></p>
 
 Sample working on a Node cluster:
 
