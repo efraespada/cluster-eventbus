@@ -15,7 +15,18 @@ eventBus.prepareWorker({
     }
 }, (params) => {
     return {
-        "message": `hello ${params.id}, I'm tester`,
+        "message": `hello ${params.id}, I'm worker 99`,
+        "params_received": params
+    };
+});
+
+eventBus.prepareWorker({
+    worker: {
+        id: 1
+    }
+}, (params) => {
+    return {
+        "message": `hello ${params.id}, I'm worker 1`,
         "params_received": params
     };
 });

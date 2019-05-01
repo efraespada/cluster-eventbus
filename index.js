@@ -61,6 +61,10 @@ function EventBus(configuration) {
     };
 
     this.event = (machine_name, worker_id, params) => {
+        if (this.configuration.test) {
+            this.currentWorker.event(this.machineName, worker_id, params);
+            return;
+        }
         if (this.currentWorker !== null) {
             if (worker_id === this.currentWorker.configuration.id) {
                 return;
