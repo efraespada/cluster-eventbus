@@ -50,7 +50,7 @@ let response = await eventBus.event(`My_Machine`,`worker_1`, {
 Ask the same to all workers:
 ```js
 let response = await eventBus.eventAll({
-  "message": `hello worker 1`,
+  "message": `hello workers`,
   "id": `other worker`,
   "dfvafva": 0
 })
