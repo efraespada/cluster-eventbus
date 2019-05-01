@@ -1,7 +1,7 @@
 {
   "name": "cluster-eventbus",
   "version": "1.0.0",
-  "description": "Simple library for communicate different Node processes. Works with clusters.",
+  "description": "Simple library for communicating different Node processes. Works with clusters.",
   "main": "index.js",
   "scripts": {
     "start": "node cluster.js",
