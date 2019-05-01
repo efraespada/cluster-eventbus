@@ -1,12 +1,12 @@
 # Cluster EventBus
 Simple library for communicate different Node processes. 
 
-It has been designed for communicating different clustered Node processes. The library also connects different machines to share clusters and distribute the work
+I developed the library for communicating different cluster processes. The library also connects different machines in the same local network to share clusters and distribute the work.
 ```bash
 $ npm install cluster-eventbus --save
 ```
 
-<p align="center"><img width="55%" vspace="20" src="https://github.com/efraespada/cluster-eventbus/raw/develop/eventbus.png"></p>
+<p align="center"><img width="60%" vspace="20" src="https://github.com/efraespada/cluster-eventbus/raw/develop/eventbus.png"></p>
 
 Sample working on a Node cluster:
 
