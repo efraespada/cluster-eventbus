@@ -1,15 +1,16 @@
 JSON.stringifyAligned = require('json-align');
 const EventBus = require('./index');
 let eventBus = new EventBus({
-    core: `MacBook Pro (914)`,
+    test: true,
     debug: true
 }).cluster({
-    isMaster: false
+    isMaster: true
 });
+
 
 eventBus.prepareWorker({
     worker: {
-        id: 9
+        id: 99
     }
 }, (params) => {
     return {
@@ -18,23 +19,24 @@ eventBus.prepareWorker({
     };
 });
 
-
-/**
- * Testing get all user endpoint
- */
-describe('EventBus Test', () => {
-    for (let i = 0; i < 1000; i++) {
-        it(`asking to worker time ${i}`, async () => {
-            return await eventBus.event(`MacBook Pro (914)`, `worker_1`, {
+setTimeout(() => {
+    /**
+     * Testing get all user endpoint
+     */
+    describe('EventBus Test', () => {
+        for (let i = 0; i < 1000; i++) {
+            it(`asking to worker time ${i}`, async () => {
+                return await eventBus.event(`MacBook Pro (914)`, `worker_1`, {
+                    "message": `hello worker 1`,
+                    "id": `test`
+                });
+            });
+        }
+        it('asking to all', async () => {
+            return await eventBus.eventAll({
                 "message": `hello worker 1`,
                 "id": `test`
             });
         });
-    }
-    it('asking to all', async () => {
-        return await eventBus.eventAll({
-            "message": `hello worker 1`,
-            "id": `test`
-        });
     });
-});
+}, 1000);

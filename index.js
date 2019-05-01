@@ -166,6 +166,7 @@ function EventBus(configuration) {
         if ((this.configuration.core === this.machineName || this.configuration.test) && cluster.isMaster) {
             this.defineMaster((port) => {
                 let msg = this.machineName === this.configuration.core ? ` 🔲 core ` : ` 🔲 ${this.configuration.core} `;
+                msg = this.configuration.test ? ` 🔲 ${this.machineName} ` : msg;
                 console.log(`${this.configuration.name} EventBus running on ${this.machineName} [${msg}]`);
             });
         }
