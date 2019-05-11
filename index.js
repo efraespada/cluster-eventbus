@@ -183,4 +183,5 @@ function EventBus(configuration) {
 exports = module.exports = EventBus;
 exports.Master = Master;
 exports.Worker = Worker;
+exports.MACHINE_NAME = computerName();
 

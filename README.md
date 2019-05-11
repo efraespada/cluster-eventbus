@@ -49,11 +49,13 @@ let response = await eventBus.event(`MacBook Pro (914)`,`worker_1`, {
   "message": `hello worker 1`,
   "id": `test_worker`
 })
-
+```
+Response model:
+```json
 {
-    response: {},
-    error: true,
-    error_message: ``
+    "response": {},
+    "error": true,
+    "error_message": ""
 }
 ```
 Ask the same to all workers:
@@ -65,12 +67,22 @@ let response = await eventBus.eventAll({
       "method": "get_name"
   }
 })
-
+```
+Response model:
+```json
 {
-    responses: [{}, {}],
-    error: true,
-    error_messages: [``, ``]
+    "responses": [{}, {}],
+    "error": true,
+    "error_messages": ["", ""]
 }
+```
+Machine name:
+```js
+EventBus.MACHINE_NAME
+```
+Response:
+```
+MacBook Pro (914)
 ```
 
 [david]: https://david-dm.org/efraespada/cluster-eventbus
