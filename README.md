@@ -43,6 +43,7 @@ if (cluster.isMaster) {
     );
 }
 ```
+### Ask
 Ask something to a worker:
 ```js
 let response = await eventBus.event(`MacBook Pro (914)`,`worker_1`, {
@@ -58,6 +59,7 @@ Response model:
     "error_message": ""
 }
 ```
+### Ask To All
 Ask the same to all workers:
 ```js
 let response = await eventBus.eventAll({
@@ -76,7 +78,7 @@ Response model:
     "error_messages": ["", ""]
 }
 ```
-Machine name:
+### Machine Name
 ```js
 EventBus.MACHINE_NAME
 ```
