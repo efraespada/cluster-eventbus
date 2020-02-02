@@ -1,6 +1,6 @@
 {
   "name": "cluster-eventbus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple library for communicating different Node processes. Works with clusters.",
   "main": "index.js",
   "scripts": {
@@ -25,6 +25,6 @@
     "request-promise": "^4.2.4"
   },
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "mocha": "^7.0.1"
   }
 }

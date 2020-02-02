@@ -4,7 +4,7 @@ const EventBus = require('./index');
 
 let eventBus = new EventBus({
     name: `Turbine`,
-    core: `MacBook Pro (914)`,
+    core: EventBus.MACHINE_NAME,
     debug: false
 }).cluster(cluster);
 

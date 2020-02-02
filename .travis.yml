@@ -1,8 +1,14 @@
 language: node_js
 node_js:
-  - "11"
+  - '11'
 sudo: enabled
 os: osx
 before_install:
   - npm install -g mocha
   - npm install
+  - rm config.json
+notifications:
+  slack:
+    secure: Dk1LuQaSkCUaLSr6mE+NK1fywo7Rw8JYBBld/utyZytyLEpmbqdZVihwESQF6/e6x1WiEEy9GACe6Z8wYrdJjW//Z3zJ6Ksv6+m7AEA5C2UxpZrDU4n0C4if+hPhTL7CHBL/NMZ4T6mdMyMVInwCSZwcvu8QkTcnbf2JVQsmIY/dRdC2q/+pOqMhBEOcE894rVe5ZekLbBfhaZWX5RiGTZp6Crr4QVHkXHkYpc0k3FuKAJu3isGtc3PegqMP/6YqFCOTDLqjl2qQEshL5J53hE5Cflw6JOElsAvk3Vrp/wsRp8AgxICwYMLt//g+w7pe+f8F98gkiO+wLT5yRYyFlIzj5/mKHGEoaudN/XPOW0lWdkdUFwsn3SIA0pYKwH+bzy0HUqhkV1c/hY+cEXWomaXEXk48PiLpZiyKUgIoUFd3FPHsVD+9qqVz88n20b4bSP6aww43MqGqd2D/1qIj369Qy1GUaeIOu/IeZJFY/qc88PkMRog6vZCQOR+SGaL4m8bcxQ9Mfc1TqYnCIjnp7AmfBTv+GnT7V+dduEwtcen52LmRaDi7XgUCxz1QZO7AjsjaZRKPk+Mvn4Eqzp7BZCR1YoBF+VtU3mWXAYPz0AMaMe31O4UN/q4HPJEpZbdw/PRY27tZmq7cGPaVH6+sjr7uGiCLEXJy8FVUnVMNyvo=
+    on_success: always
+    on_failure: always

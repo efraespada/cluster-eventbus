@@ -60,18 +60,17 @@ function EventBus(configuration) {
         })
     };
 
-    this.event = (machine_name, worker_id, params) => {
+    this.event = async (machine_name, worker_id, params) => {
         if (this.currentWorker !== null) {
             if (this.configuration.test) {
-                this.currentWorker.event(this.machineName, worker_id, params);
-                return;
+                return await this.currentWorker.event(this.machineName, worker_id, params);
             }
             if (worker_id === this.currentWorker.configuration.id) {
                 return;
             }
-            this.currentWorker.event(machine_name, worker_id, params)
+            return await this.currentWorker.event(machine_name, worker_id, params)
         } else {
-            this.master.event(machine_name, worker_id, params);
+            return await this.master.event(machine_name, worker_id, params);
         }
     };
 
@@ -148,7 +147,7 @@ function EventBus(configuration) {
         let configPath = `${process.cwd()}/config.json`;
         if (!fs.existsSync(configPath)) {
             let json = {};
-            json[`${this.machineName}`] = require(`./config_files/default_config_machine`);
+            json[`${this.machineName}`] = require(__dirname + `/config_files/default_config_machine`);
             fs.writeFileSync(configPath, JSON.stringifyAligned(json), 'utf8');
         }
         let conf = require(configPath);
@@ -163,15 +162,19 @@ function EventBus(configuration) {
     this.cluster = (cluster) =>  {
         if (cluster.isMaster) {
             if (this.configuration.core === undefined && !this.configuration.test) {
-                console.log(`${this.configuration.name} EventBus running on ${this.machineName}. [ 🔳 core not defined ]`);
+                if (this.debug) {
+                    console.log(`${this.configuration.name} EventBus running on ${this.machineName}. [ 🔳 core not defined ]`);
+                }
                 utils.coreNotDefined(this.machineName);
             }
         }
         if ((this.configuration.core === this.machineName || this.configuration.test) && cluster.isMaster) {
             this.defineMaster((port) => {
-                let msg = this.machineName === this.configuration.core ? ` 🔲 core ` : ` 🔲 ${this.configuration.core} `;
-                msg = this.configuration.test ? ` 🔲 ${this.machineName} ` : msg;
-                console.log(`${this.configuration.name} EventBus running on ${this.machineName} [${msg}]`);
+                if (this.debug) {
+                    let msg = this.machineName === this.configuration.core ? ` 🔲 core ` : ` 🔲 ${this.configuration.core} `;
+                    msg = this.configuration.test ? ` 🔲 ${this.machineName} ` : msg;
+                    console.log(`${this.configuration.name} EventBus running on ${this.machineName} [${msg}]`);
+                }
             });
         }
         return this;
@@ -183,4 +186,5 @@ function EventBus(configuration) {
 exports = module.exports = EventBus;
 exports.Master = Master;
 exports.Worker = Worker;
+exports.MACHINE_NAME = computerName();
 
