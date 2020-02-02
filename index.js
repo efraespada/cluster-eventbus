@@ -162,15 +162,19 @@ function EventBus(configuration) {
     this.cluster = (cluster) =>  {
         if (cluster.isMaster) {
             if (this.configuration.core === undefined && !this.configuration.test) {
-                console.log(`${this.configuration.name} EventBus running on ${this.machineName}. [ 🔳 core not defined ]`);
+                if (this.debug) {
+                    console.log(`${this.configuration.name} EventBus running on ${this.machineName}. [ 🔳 core not defined ]`);
+                }
                 utils.coreNotDefined(this.machineName);
             }
         }
         if ((this.configuration.core === this.machineName || this.configuration.test) && cluster.isMaster) {
             this.defineMaster((port) => {
-                let msg = this.machineName === this.configuration.core ? ` 🔲 core ` : ` 🔲 ${this.configuration.core} `;
-                msg = this.configuration.test ? ` 🔲 ${this.machineName} ` : msg;
-                console.log(`${this.configuration.name} EventBus running on ${this.machineName} [${msg}]`);
+                if (this.debug) {
+                    let msg = this.machineName === this.configuration.core ? ` 🔲 core ` : ` 🔲 ${this.configuration.core} `;
+                    msg = this.configuration.test ? ` 🔲 ${this.machineName} ` : msg;
+                    console.log(`${this.configuration.name} EventBus running on ${this.machineName} [${msg}]`);
+                }
             });
         }
         return this;
