@@ -60,18 +60,17 @@ function EventBus(configuration) {
         })
     };
 
-    this.event = (machine_name, worker_id, params) => {
+    this.event = async (machine_name, worker_id, params) => {
         if (this.currentWorker !== null) {
             if (this.configuration.test) {
-                this.currentWorker.event(this.machineName, worker_id, params);
-                return;
+                return await this.currentWorker.event(this.machineName, worker_id, params);
             }
             if (worker_id === this.currentWorker.configuration.id) {
                 return;
             }
-            this.currentWorker.event(machine_name, worker_id, params)
+            return await this.currentWorker.event(machine_name, worker_id, params)
         } else {
-            this.master.event(machine_name, worker_id, params);
+            return await this.master.event(machine_name, worker_id, params);
         }
     };
 
@@ -148,7 +147,7 @@ function EventBus(configuration) {
         let configPath = `${process.cwd()}/config.json`;
         if (!fs.existsSync(configPath)) {
             let json = {};
-            json[`${this.machineName}`] = require(`./config_files/default_config_machine`);
+            json[`${this.machineName}`] = require(__dirname + `/config_files/default_config_machine`);
             fs.writeFileSync(configPath, JSON.stringifyAligned(json), 'utf8');
         }
         let conf = require(configPath);
