@@ -7,7 +7,7 @@ let conf = {
     port: 4000
 };
 
-new EventBus(conf).cluster({
+let eventBusMaster = new EventBus(conf).cluster({
     isMaster: true
 });
 
@@ -52,7 +52,7 @@ describe('EventBus Test', () => {
         });
     }
     it('asking to all', async () => {
-        return await eventBusWorkerB.eventAll({
+        return await eventBusMaster.eventAll({
             "message": `hello workers`,
             "id": `test`
         });
