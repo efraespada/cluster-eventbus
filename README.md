@@ -78,6 +78,13 @@ Response model:
     "error_messages": ["", ""]
 }
 ```
+
+### Close Process
+Close everything by calling:
+```bash
+await eventBus.closeAll();
+```
+
 ### Machine Name
 ```js
 EventBus.MACHINE_NAME

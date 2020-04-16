@@ -5,8 +5,11 @@ const EventUtils = require('./event_utils');
 
 function Worker(configuration) {
 
+    let _this = this;
     let utils = new EventUtils();
     let requestBuilder = new RequestBuilder();
+
+    this.serverInstance = undefined;
 
     this.configuration = configuration || {};
     if (this.configuration.id === undefined) {
@@ -14,13 +17,17 @@ function Worker(configuration) {
     }
     this.port = null;
 
+    this.stop = () => {
+        this.serverInstance.close();
+    };
+
     this.prepare = (callback, request) => {
         let connectionConfig = utils.mainMachine();
         if (connectionConfig === null || connectionConfig.ip === undefined || connectionConfig.port === undefined) {
-            console.error(JSON.stringify(connectionConfig));
             callback(null);
             return
         }
+
         requestBuilder.getRequest(`http://${connectionConfig.ip}:${connectionConfig.port}/`, {
             "method": "get_port",
             "ip": this.configuration.ip,
@@ -42,8 +49,8 @@ function Worker(configuration) {
                 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Headers, Access-Control-Allow-Origin");
                 next();
             });
-            app.get('/', async (req, res) => await request(req, res));
-            app.listen(this.port, callback(this.port));
+            app.get('/', async (req, res) => await request(_this, req, res));
+            _this.serverInstance = app.listen(this.port, callback(this.port));
         }).catch((err) => {
             console.log(`error ${err}`);
 

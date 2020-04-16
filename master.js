@@ -9,10 +9,12 @@ const Error = {
 
 function Master(configuration) {
 
+    let _this = this;
     let utils = new EventUtils();
     let requestBuilder = new RequestBuilder();
     this.configuration = configuration;
     this.mainPort = this.configuration.port;
+    this.serverInstance = undefined;
 
     this.prepare = (machine_name, callback, request) => {
         const express = require('express');
@@ -27,7 +29,7 @@ function Master(configuration) {
         });
         app.get('/', async (req, res) => await request(req, res));
         app.post('/', async (req, res) => await request(req, res));
-        app.listen(this.mainPort, callback(this.mainPort));
+        _this.serverInstance = app.listen(this.mainPort, callback(this.mainPort));
     };
 
     /**
@@ -61,6 +63,7 @@ function Master(configuration) {
                 resolve(res);
             } else {
                 requestBuilder.getRequest(`http://${ip}:${port}/`, params).then((response) => {
+
                     let res = {
                         response: response,
                         error: false
