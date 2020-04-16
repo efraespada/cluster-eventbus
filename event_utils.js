@@ -3,12 +3,25 @@ JSON.stringifyAligned = require('json-align');
 
 function EventUtils() {
 
-    this.getConfig = () => {
+    this._prim_getConfig = () => {
         let path = `${process.cwd()}/config.json`;
         if (fs.existsSync(path)) {
-            return require(path)
+            let content = fs.readFileSync(path, 'utf-8');
+            try {
+                return JSON.parse(content);
+            } catch (e) {
+                return JSON.parse(JSON.stringify(content));
+            }
         }
         return null;
+    };
+
+    this.getConfig = () => {
+        let config = this._prim_getConfig();
+        if (JSON.stringify(config).length < 3) {
+            return this.getConfig()
+        }
+        return config;
     };
 
     this.prepareConfigWorker = (machine_name, worker_id, ip, port) => {
@@ -35,14 +48,13 @@ function EventUtils() {
         }
     };
 
-    this.getPortForWorker = (machine_name, worker_id, main_port) => {
-        let config = this.getConfig();
+    this.getPortForWorker = (config, machine_name, worker_id, main_port) => {
         let port = -1;
         if (config[machine_name] === undefined) {
-            return port;
+            return main_port;
         }
         if (config[machine_name].workers === undefined) {
-            return port;
+            return main_port;
         }
         let worker = config[machine_name].workers[worker_id];
         if (worker !== undefined && worker.port !== undefined) {
@@ -66,7 +78,7 @@ function EventUtils() {
         let machine = this.mainMachine();
         if (conf === null) {
             let json = {};
-            json[`${machine_name}`] = require(`./config_files/default_config_machine`);
+            json[machine_name] = require(`./config_files/default_config_machine`);
             // TODO check if is main machine for remove master key-pair
             if (machine !== null && machine.name !== undefined && machine.name !== machine_name) {
                 delete json[`${machine_name}`].master;
@@ -87,10 +99,11 @@ function EventUtils() {
             conf[machine_name].workers[worker_id].id = worker_id;
             conf[machine_name].workers[worker_id].ip = ip;
             if (conf[machine_name].workers[worker_id].port === undefined) {
-                conf[machine_name].workers[worker_id].port = this.getPortForWorker(machine_name, worker_id, main_port);
+                conf[machine_name].workers[worker_id].port = this.getPortForWorker(conf, machine_name, worker_id, main_port);
             }
             fs.writeFileSync(configPath, JSON.stringifyAligned(conf), 'utf8');
         }
+        return conf;
     };
 
     this.mainMachine = () => {
@@ -99,16 +112,16 @@ function EventUtils() {
         let name = null;
         let config = this.getConfig();
         let machineKeys = Object.keys(config);
-        for (let m in machineKeys) {
-            let machineKey = machineKeys[m];
-            let machine = config[machineKey];
+        for (let key of machineKeys) {
+            let machine = config[key];
             if (machine.isCore) {
-                name = machineKey;
+                name = key;
                 ip = machine.master.ip;
                 port = machine.master.port;
                 break;
             }
         }
+
         if (ip === null || port === null || ip === undefined || port === undefined) {
             return null
         }
